@@ -25,7 +25,7 @@ const client = new SapphireClient({
   intents: ['GUILDS', 'GUILD_MESSAGES'],
   fetchPrefix: (message) =>
     db.get(`guild_${message.guildId}.prefix`) || process.env.DISCORD_PREFIX,
-  logger: { level: parseInt(process.env.DISCORD_LOGLEVEL) || LogLevel.Error },
+  logger: { level: parseInt(process.env.DISCORD_LOGLEVEL) },
   baseUserDirectory: __dirname
 });
 console.clear();
