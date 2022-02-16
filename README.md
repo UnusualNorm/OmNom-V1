@@ -1,2 +1,3 @@
 # OmNom
- A (garbage) Discord bot with VERY niche features!
+
+A (garbage) Discord bot with VERY niche features!

@@ -1,0 +1,5 @@
+dist
+node_modules
+json.sqlite
+yarn-error.log
+.env
