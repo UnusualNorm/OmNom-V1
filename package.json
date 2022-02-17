@@ -2,7 +2,7 @@
   "name": "omnom",
   "version": "1.0.0",
   "description": "A (garbage) Discord bot with VERY niche features!",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
     "dev": "node --loader ts-node/esm ./src/index.ts",

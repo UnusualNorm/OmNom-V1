@@ -17,7 +17,7 @@ console.debug('Importing native modules...');
 import path from 'path';
 
 console.debug('Importing modules...');
-import { LogLevel, SapphireClient } from '@sapphire/framework';
+import { SapphireClient } from '@sapphire/framework';
 import db from 'quick.db';
 
 console.debug('Creating client...');
