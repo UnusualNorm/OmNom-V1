@@ -1,5 +1,5 @@
 # STAGE 1
-FROM node:16 as builder
+FROM node:17 as builder
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY package*.json ./
@@ -22,7 +22,7 @@ COPY --chown=node:node . .
 RUN yarn build
 
 # STAGE 2
-FROM node:16
+FROM node:17
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY package*.json ./
@@ -45,5 +45,5 @@ COPY --from=builder /home/node/app/dist ./dist
 RUN touch json.sqlite
 #VOLUME [ "/home/node/app/data" ]
 #TODO: Research the expose command...
-EXPOSE 6969
+#EXPOSE 6969
 CMD [ "yarn", "start" ]
