@@ -10,7 +10,7 @@ import db from 'quick.db';
 })
 export class MessageMoveShorthand extends Listener {
   run(message: Message) {
-    const { guild, channel, member } = message;
+    const { guild, channel, member, author } = message;
     const { logger } = this.container;
     if (
       message.type == 'REPLY' &&
@@ -20,7 +20,7 @@ export class MessageMoveShorthand extends Listener {
     ) {
       logger.debug('Found replace message shorthand...');
       if (
-        db.get(`guild_${guild.id}.message.shorthands`) &&
+        db.get(`guild_${guild.id}.message.shorthand`) &&
         channel.permissionsFor(guild.me).has('MANAGE_MESSAGES') &&
         channel.permissionsFor(member).has('MANAGE_MESSAGES')
       ) {
@@ -41,6 +41,13 @@ export class MessageMoveShorthand extends Listener {
                   'Failed to get/create webhook... (Check permissions?)'
                 );
               logger.debug('Got webhooks...');
+
+              let override = message.content;
+              //TODO: Prepend the reference user if targetMessage is type 'reply'
+              if (db.get(`guild_${guild.id}.message.signature`)) {
+                override += `\n- <@${author.id}> moved <@${targetMessage.author.id}>'s message from <#${targetMessage.channelId}>`;
+                logger.debug('Added signature...');
+              }
 
               messageToWebhook(
                 targetMessage,
@@ -67,7 +74,8 @@ export class MessageMoveShorthand extends Listener {
                       'Failed to send webhook message... (Check permissions?)'
                     );
                 },
-                threadId
+                threadId,
+                override
               );
             });
           } else {

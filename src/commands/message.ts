@@ -15,6 +15,8 @@ import db from 'quick.db';
 export class UserCommand extends SubCommandPluginCommand {
   public move(message: Message) {
     const { logger } = this.container;
+    const { guild, author } = message;
+
     if (message.type == 'REPLY') {
       message.fetchReference().then((targetMessage) => {
         const targetChannel = message.mentions.channels.first();
@@ -30,6 +32,14 @@ export class UserCommand extends SubCommandPluginCommand {
               return message.reply(
                 'Failed to get/create webhook... (Check permissions?)'
               );
+            logger.debug('Got webhooks...');
+
+            let override = message.content;
+            //TODO: Prepend the reference user if targetMessage is type 'reply'
+            if (db.get(`guild_${guild.id}.message.signature`)) {
+              override += `\n- <@${author.id}> moved <@${targetMessage.author.id}>'s message from <#${targetMessage.channelId}>`;
+              logger.debug('Added signature...');
+            }
 
             messageToWebhook(
               targetMessage,
@@ -55,7 +65,8 @@ export class UserCommand extends SubCommandPluginCommand {
                     'Failed to send webhook message... (Check permissions?)'
                   );
               },
-              threadId
+              threadId,
+              override
             );
           });
         } else {
@@ -77,24 +88,27 @@ export class UserCommand extends SubCommandPluginCommand {
       return message.reply('This command must be ran in a server...');
     }
 
+    const genericToggles: Array<string> = ['shorthand', 'signature'];
+    let foundToggle = false;
     const feature = args.next();
-    switch (feature) {
-      case 'shorthand': {
-        logger.info('Set message feature toggle!');
-        const enabled = db.get(`guild_${guild.id}.message.shorthands`);
-        if (enabled) {
-          db.set(`guild_${guild.id}.message.shorthands`, false);
-          message.reply(`Disabled message feature: '${feature}'!`);
-        } else {
-          db.set(`guild_${guild.id}.message.shorthands`, true);
-          message.reply(`Enabled message feature: '${feature}'!`);
-        }
-        break;
+    for (let i = 0; i < genericToggles.length; i++) {
+      const toggle = genericToggles[i];
+      if (feature == toggle) {
+        foundToggle = true;
+        logger.info(`Set message feature toggle: '${toggle}'!`);
+        const enabled = db.get(`guild_${guild.id}.message.${toggle}`);
+        const toggleTarget = enabled ? false : true;
+        db.set(`guild_${guild.id}.message.${toggle}`, toggleTarget);
+        message.reply(`${toggleTarget?'Enabled':'Disabled'} message feature: '${toggle}'!`);
       }
+    }
 
+    switch (feature) {
       default:
-        logger.warn('Message feature not found...');
-        message.reply(`Invalid feature: '${feature}'...`);
+        if (!foundToggle) {
+          logger.warn('Message feature not found...');
+          message.reply(`Invalid feature: '${feature}'...`);
+        }
         break;
     }
   }

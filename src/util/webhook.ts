@@ -51,14 +51,16 @@ export function messageToWebhook(
   message: Message,
   webhook: Webhook,
   cb: (success: boolean) => unknown,
-  threadId?: string
+  threadId?: string,
+  override?: string
 ) {
   const { author, member, attachments, content } = message;
+
   webhook
     .send({
-      avatarURL: member.displayAvatarURL(),
-      username: member.nickname ? member.nickname : author.username,
-      content,
+      avatarURL: member ? member.displayAvatarURL() : author.avatarURL(),
+      username: member?.nickname ? member.nickname : author.username,
+      content: override ? override : content,
       files: attachments.toJSON(),
       threadId,
     })
