@@ -26,15 +26,47 @@ const client = new SapphireClient({
   fetchPrefix: (message) =>
     db.get(`guild_${message.guildId}.prefix`) || process.env.DISCORD_PREFIX,
   logger: { level: parseInt(process.env.DISCORD_LOGLEVEL) },
-  baseUserDirectory: __dirname
+  baseUserDirectory: __dirname,
 });
+const { logger } = client;
 console.clear();
-client.logger.info('Logger set up!');
+logger.info('Logger set up!');
 
-client.logger.debug('Logging in...');
+logger.debug('Listening for ready...');
+client.on('ready', () => {
+  logger.info('Client is ready!');
+
+  logger.debug('Setting up presence loop...');
+  const updatePresence = () => {
+    client.user.setPresence({
+      activities: [
+        {
+          name: `around in ${client.guilds.cache.size} guilds!`,
+          type: 'PLAYING',
+        },
+      ],
+    });
+    logger.info('Updated presence!');
+  };
+
+  setInterval(() => updatePresence, 600000);
+  logger.debug('Manually updating presence...');
+  updatePresence();
+});
+
+logger.debug('Logging in...');
 client
   .login(process.env.DISCORD_TOKEN)
-  .then(() => client.logger.info('Logged in to Discord!'))
-  .catch((reason) =>
-    client.logger.fatal(`Failed to log in to Discord...\n${reason}`)
-  );
+  .then(() => logger.info('Logged in to Discord!'))
+  .catch((reason) => logger.fatal(`Failed to log in to Discord...\n${reason}`));
+
+function shutdown() {
+  logger.info('Shutting down!');
+  client.destroy();
+}
+
+logger.debug('Listening for SIGTERM...');
+process.on('SIGTERM', () => {
+  logger.debug('Recieved SIGTERM...');
+  shutdown();
+});

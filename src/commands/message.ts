@@ -2,78 +2,21 @@ import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Args } from '@sapphire/framework';
 import { Message, MessageEmbed } from 'discord.js';
-import { ensureGetWebhook, messageToWebhook } from '../util/webhook';
-import { separateThread } from '../util/channel';
 import db from 'quick.db';
+import { move } from '../shared/message';
 
 @ApplyOptions<SubCommandPluginCommand.Options>({
   subCommands: ['move', 'toggle', { input: 'help', default: true }],
   name: 'message',
-  requiredClientPermissions: ['MANAGE_MESSAGES'],
+  requiredClientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
   requiredUserPermissions: ['MANAGE_MESSAGES'],
 })
 export class UserCommand extends SubCommandPluginCommand {
   public move(message: Message) {
     const { logger } = this.container;
-    const { guild, author } = message;
 
     if (message.type == 'REPLY') {
-      message.fetchReference().then((targetMessage) => {
-        const targetChannel = message.mentions.channels.first();
-        if (!targetChannel) {
-          logger.warn('No channel mention found...');
-          message.reply('No channel specified...');
-        }
-
-        if (targetChannel.type == 'GUILD_TEXT' || targetChannel.isThread()) {
-          const { channel, threadId } = separateThread(targetChannel);
-          ensureGetWebhook(channel, (webhook) => {
-            if (!webhook)
-              return message.reply(
-                'Failed to get/create webhook... (Check permissions?)'
-              );
-            logger.debug('Got webhooks...');
-
-            let override = message.content;
-            //TODO: Prepend the reference user if targetMessage is type 'reply'
-            if (db.get(`guild_${guild.id}.message.signature`)) {
-              override += `\n- <@${author.id}> moved <@${targetMessage.author.id}>'s message from <#${targetMessage.channelId}>`;
-              logger.debug('Added signature...');
-            }
-
-            messageToWebhook(
-              targetMessage,
-              webhook,
-              (success) => {
-                if (success)
-                  targetMessage
-                    .delete()
-                    .then(() => {
-                      logger.info('Moved message!');
-                      message.delete();
-                    })
-                    .catch((error) => {
-                      logger.error(
-                        `Failed to delete target message...\n${error}`
-                      );
-                      message.reply(
-                        'Failed to delete target message... (Check permissions?)'
-                      );
-                    });
-                else
-                  message.reply(
-                    'Failed to send webhook message... (Check permissions?)'
-                  );
-              },
-              threadId,
-              override
-            );
-          });
-        } else {
-          logger.warn('Tried to move a non-guild message...');
-          message.reply('You can only use this command in a server!');
-        }
-      });
+      move(message);
     } else {
       logger.warn('Message was not a reply...');
       message.reply('You must reply to a message to use this command!');
@@ -99,7 +42,11 @@ export class UserCommand extends SubCommandPluginCommand {
         const enabled = db.get(`guild_${guild.id}.message.${toggle}`);
         const toggleTarget = enabled ? false : true;
         db.set(`guild_${guild.id}.message.${toggle}`, toggleTarget);
-        message.reply(`${toggleTarget?'Enabled':'Disabled'} message feature: '${toggle}'!`);
+        message.reply(
+          `${
+            toggleTarget ? 'Enabled' : 'Disabled'
+          } message feature: '${toggle}'!`
+        );
       }
     }
 
