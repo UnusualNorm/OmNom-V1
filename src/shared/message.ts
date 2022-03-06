@@ -8,19 +8,15 @@ import { separateThread } from '../util/channel';
 export function move(message: Message) {
   const { channel, guild, member, author } = message;
   if (
-    channel.type ==
-      ('GUILD_TEXT' || 'GUILD_PUBLIC_THREAD' || 'GUILD_PRIVATE_THREAD') &&
+    (channel.type == 'GUILD_TEXT' || channel.isThread()) &&
     channel.permissionsFor(guild.me).has('MANAGE_MESSAGES') &&
     channel.permissionsFor(member).has('MANAGE_MESSAGES')
   ) {
     logger.debug('Can run replace message...');
     message.fetchReference().then((targetMessage) => {
       const targetChannel = message.mentions.channels.first();
-      if (!targetChannel) {
-        logger.warn('No channel mention found...');
-        message.reply('No channel specified...');
-      }
-      logger.debug('Found target channel...');
+      if (!targetChannel) return message.reply('No channel specified...');
+      logger.debug('Fetched reference...');
 
       if (targetChannel.type == 'GUILD_TEXT' || targetChannel.isThread()) {
         const { channel, threadId } = separateThread(targetChannel);
@@ -42,7 +38,7 @@ export function move(message: Message) {
             targetMessage,
             webhook,
             (success) => {
-              logger.debug('Finished running message to webhook...');
+              logger.debug('Finished sending message to webhook...');
               if (success)
                 targetMessage
                   .delete()
@@ -67,10 +63,7 @@ export function move(message: Message) {
             override
           );
         });
-      } else {
-        logger.warn('Tried to move a non-guild message...');
-        message.reply('You can only use this command in a server!');
-      }
+      } else message.reply("I don't have permissions in this channel!");
     });
   }
 }

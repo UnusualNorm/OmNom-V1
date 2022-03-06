@@ -9,16 +9,14 @@ import { move } from '../shared/message';
 })
 export class MessageMoveShorthand extends Listener {
   run(message: Message) {
-    const { guild } = message;
-    const { logger } = this.container;
+    const { guild, client } = message;
     if (
       message.type == 'REPLY' &&
-      message.content.replace(/<#([0-9]*)>/g, '').trim() == ''
-    ) {
-      logger.debug('Found replace message shorthand...');
-      if (db.get(`guild_${guild.id}.message.shorthand`)) {
-        move(message);
-      }
-    }
+      db.get(`guild_${guild.id}.message.shorthand`) &&
+      // Check if the message is just the prefix
+      message.content.replace(/<#([0-9]*)>/g, '').trim() ==
+        client.fetchPrefix(message)
+    )
+      move(message);
   }
 }

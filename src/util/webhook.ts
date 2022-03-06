@@ -52,7 +52,7 @@ export function messageToWebhook(
   webhook: Webhook,
   cb: (success: boolean) => unknown,
   threadId?: string,
-  override?: string
+  contentOverride?: string
 ) {
   const { author, member, attachments, content } = message;
 
@@ -60,12 +60,13 @@ export function messageToWebhook(
     .send({
       avatarURL: member ? member.displayAvatarURL() : author.avatarURL(),
       username: member?.nickname ? member.nickname : author.username,
-      content: override ? override : content,
+      content: contentOverride ? contentOverride : content,
       files: attachments.toJSON(),
       threadId,
     })
     .then(() => cb(true))
-    .catch((error) =>
-      logger.error(`Failed to send message to webhook...\n${error}`)
-    );
+    .catch((error) => {
+      logger.error(`Failed to send message to webhook...\n${error}`);
+      cb(false);
+    });
 }

@@ -14,6 +14,7 @@ console.debug('Registering Sapphire plugins...');
 import '@sapphire/plugin-logger/register';
 
 console.debug('Importing native modules...');
+import fs from 'fs';
 import path from 'path';
 
 console.debug('Importing modules...');
@@ -69,4 +70,14 @@ logger.debug('Listening for SIGTERM...');
 process.on('SIGTERM', () => {
   logger.debug('Recieved SIGTERM...');
   shutdown();
+});
+
+logger.debug('Setting up uncaught exception catchers...');
+const log_file_err = fs.createWriteStream('error.log', {
+  flags: 'a',
+});
+
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+  log_file_err.write(err + '\n');
 });
