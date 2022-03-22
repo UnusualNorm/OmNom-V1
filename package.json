@@ -40,6 +40,7 @@
     "@sapphire/plugin-logger": "^2.2.0",
     "@sapphire/plugin-subcommands": "^2.1.3",
     "@sapphire/utilities": "^3.3.0",
+    "@stewartmcgown/grammarly-api": "^1.1.2",
     "bufferutil": "^4.0.6",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
@@ -50,6 +51,7 @@
     "quick.db": "^7.1.3",
     "tenorjs": "^1.0.8",
     "text-on-gif": "^2.0.6",
+    "translate-google": "^1.5.0",
     "utf-8-validate": "^5.0.8",
     "uwuifier": "^4.0.5",
     "zlib-sync": "^0.1.7"

@@ -48,7 +48,6 @@ function H(h: string): string {
 class HFilter extends Filter {
   name = 'h';
   description = 'H-ifies your message!';
-  messageOnly = false;
 
   run = (
     text: string,

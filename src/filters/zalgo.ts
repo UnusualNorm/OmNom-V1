@@ -149,6 +149,7 @@ function zalgoChar(letter: string) {
 class zalgoFilter extends Filter {
   name = 'zalgo';
   description = 'Zalgoify your text';
+  
   run = (
     text: string,
     cb: (text: string, override?: WebhookMessageOptions) => unknown,
