@@ -57,7 +57,7 @@ export function filter(message: Message) {
 
     // Roles
     if (!message.webhookId) {
-      const roles = member.roles.cache.toJSON();
+      const roles = member.roles.cache.toJSON()||[];
       for (let i = roles.length - 1; i >= 0; i--) {
         const role = roles[i];
         filterList = filterList.concat(
