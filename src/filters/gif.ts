@@ -13,7 +13,7 @@ const Tenor = client({
 class reverseFilter extends Filter {
   name = 'gif';
   description = 'Turns your message into a gif!';
-  
+
   run = (
     text: string,
     cb: (text: string, override?: WebhookMessageOptions) => unknown,

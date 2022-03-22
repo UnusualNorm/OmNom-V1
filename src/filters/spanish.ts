@@ -1,4 +1,4 @@
-import translate from 'translate-google';
+import translate from '@vitalets/google-translate-api';
 import { WebhookMessageOptions } from 'discord.js';
 import Filter from '../Filter';
 
@@ -11,8 +11,7 @@ class HFilter extends Filter {
     cb: (text: string, override?: WebhookMessageOptions) => unknown,
     override?: WebhookMessageOptions
   ) => {
-    translate(text, { to: 'es' })
-      .then((text: string) => cb(text, override));
+    translate(text, { to: 'es' }).then(({ text }) => cb(text, override));
   };
 }
 

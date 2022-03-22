@@ -105,7 +105,8 @@ export function filter(message: Message, filterList: Filter[]) {
         );
 
       override.threadId = seperate.threadId;
-      override.content = text || (override.files.length > 0 ? null : '[removed]');
+      override.content =
+        text || (override.files.length > 0 ? null : '[removed]');
       override.username = override.username || '[deleted]';
 
       messageToWebhook(message, webhook, override, (error) => {
