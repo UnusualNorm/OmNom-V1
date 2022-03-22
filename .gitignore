@@ -80,3 +80,6 @@ dist/
 
 # Databse file
 json.sqlite
+
+# Public files
+public/

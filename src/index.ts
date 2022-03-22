@@ -15,11 +15,13 @@ import '@sapphire/plugin-logger/register';
 
 console.debug('Importing native modules...');
 import fs from 'fs';
-import path from 'path';
+import http from 'http';
 
 console.debug('Importing modules...');
 import { SapphireClient } from '@sapphire/framework';
 import db from 'quick.db';
+import express from 'express';
+import ngrok from 'ngrok';
 
 console.debug('Creating client...');
 const client = new SapphireClient({
@@ -79,3 +81,30 @@ process.on('uncaughtException', function (err) {
   fs.writeFileSync('error.log', `${err.name}\n${err.message}\n${err.stack}`);
   shutdown(1);
 });
+
+if (!fs.existsSync('public/')) {
+  logger.debug('Creating public directory...');
+  fs.mkdirSync('public/');
+}
+
+logger.debug('Creating server...');
+const app = express();
+const server = http.createServer(app);
+
+logger.debug('Routing server...');
+app.use(express.static('public/'));
+
+logger.debug('Listening to port...');
+server.listen(parseInt(process.env.PORT));
+
+if (process.env.NGROK_APIKEY) {
+  logger.debug('Starting ngrok...');
+  ngrok
+    .authtoken(process.env.NGROK_APIKEY)
+    .then(() => ngrok.connect(parseInt(process.env.PORT)))
+    .then((link) => {
+      logger.info(`Started Ngrok at '${link}'!`);
+      process.env.SERVER_IP = link;
+    });
+} else if (!process.env.SERVER_IP)
+  throw new Error('No Ngrok token or server ip specified...');
