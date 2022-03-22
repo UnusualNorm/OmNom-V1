@@ -61,9 +61,10 @@ client
   .then(() => logger.info('Logged in to Discord!'))
   .catch((reason) => logger.fatal(`Failed to log in to Discord...\n${reason}`));
 
-function shutdown() {
+function shutdown(code = 0) {
   logger.info('Shutting down!');
   client.destroy();
+  process.exit(code);
 }
 
 logger.debug('Listening for SIGTERM...');
@@ -72,12 +73,9 @@ process.on('SIGTERM', () => {
   shutdown();
 });
 
-logger.debug('Setting up uncaught exception catchers...');
-const log_file_err = fs.createWriteStream('error.log', {
-  flags: 'a',
-});
-
+logger.debug('Listening for uncaught exceptions...');
 process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
-  log_file_err.write(err + '\n');
+  logger.error('Uncaughtaught exception: ' + err);
+  fs.writeFileSync('error.log', `${err.name}\n${err.message}\n${err.stack}`);
+  shutdown(1);
 });

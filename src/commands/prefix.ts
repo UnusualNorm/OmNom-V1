@@ -11,8 +11,8 @@ import db from 'quick.db';
 export class EvalCommand extends Command {
   public messageRun(message: Message, args: Args) {
     const { client, member, guild, channel } = message;
-    const { logger } = client;
     const prefix = args.next();
+
     if (!prefix)
       message.reply(
         `The prefix for this server is: '${client.fetchPrefix(message)}'!`

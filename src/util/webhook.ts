@@ -17,11 +17,9 @@ export function ensureGetWebhook(
   if (!channel.permissionsFor(channel.guild.me).has('MANAGE_WEBHOOKS'))
     return cb("I don't have webhook permissions for the channel!");
 
-  logger.debug('Getting webhooks...');
   channel
     .fetchWebhooks()
     .then((webhooks) => {
-      logger.debug('Finding webhook...');
       const webhook = webhooks.find((wh) => (wh.token ? true : false));
       if (webhook) {
         cb(null, webhook);
@@ -31,9 +29,7 @@ export function ensureGetWebhook(
           .createWebhook(
             guild.me.nickname ? guild.me.nickname : client.user.username,
             {
-              avatar: guild.me.displayAvatarURL
-                ? guild.me.displayAvatarURL()
-                : client.user.avatarURL(),
+              avatar: guild.me.displayAvatarURL(),
             }
           )
           .then((webhook) => cb(null, webhook))
@@ -55,8 +51,10 @@ export function ensureGetWebhook(
 
 export function convertMessage(message: Message): WebhookMessageOptions {
   const { author, member, content, attachments } = message;
+
   return {
-    avatarURL: member.displayAvatarURL(),
+    //FIXME: Webhook avatars broken
+    avatarURL: message.webhookId ? null : member.displayAvatarURL(),
     username: member?.nickname ? member.nickname : author.username,
     content,
     files: attachments.toJSON(),
@@ -68,13 +66,25 @@ export function messageToWebhook(
   message: Message,
   webhook: Webhook,
   override?: WebhookMessageOptions,
-  cb?: (error: string, msg?: Message | APIMessage) => unknown
+  cb?: (error: string, msg?: Message | APIMessage) => unknown,
+  trim = true
 ) {
   const messageOptions = convertMessage(message);
   const webhookOptions: WebhookMessageOptions = {
     ...messageOptions,
     ...override,
   };
+
+  if (trim) {
+    if (webhookOptions.username?.length > 80) {
+      logger.debug('Trimming username...');
+      webhookOptions.username = webhookOptions.username.slice(77) + '...';
+    }
+    if (webhookOptions.content?.length > 2000) {
+      logger.debug('Trimming content...');
+      webhookOptions.content = webhookOptions.content.slice(1997) + '...';
+    }
+  }
 
   webhook
     .send(webhookOptions)

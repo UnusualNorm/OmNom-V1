@@ -14,10 +14,10 @@ export class EvalCommand extends Command {
       args.shift();
       const code = args.join(' ');
       try {
-        eval(code);
+        message.reply('```' + eval(code) + '```');
       } catch (error) {
         logger.error(`Encountered eval error...\n${error}`);
-        message.reply(`Error: ` + error);
+        message.reply('Error: ```' + error + '```');
       }
     } else message.reply('😒');
   }
