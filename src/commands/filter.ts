@@ -74,10 +74,14 @@ function toggleBase(message: Message, args: Args, enabled: boolean) {
   runIn: ['GUILD_TEXT', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
 })
 export class UserCommand extends SubCommandPluginCommand {
-  public message(message: Message) {
+  public message(message: Message, args: Args) {
+    const filterName = args.next().toLowerCase();
+    if (!filters.has(filterName))
+      return message.reply(`The filter: '${filterName}' doesn't exist...`);
+
     if (message.type == 'REPLY')
       message.fetchReference().then((target) => {
-        filter(target);
+        filter(target, [filters.get(filterName)]);
       });
     else message.reply('You must reply to a message to use this command!');
   }

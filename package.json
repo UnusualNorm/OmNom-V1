@@ -46,6 +46,7 @@
     "erlpack": "discord/erlpack",
     "quick.db": "^7.1.3",
     "utf-8-validate": "^5.0.8",
+    "uwuifier": "^4.0.5",
     "zlib-sync": "^0.1.7"
   }
 }

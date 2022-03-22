@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, ListenerOptions } from '@sapphire/framework';
 import { Message } from 'discord.js';
-import { filter } from '../shared/filter';
+import { filter, getMessageFilters } from '../shared/filter';
 
 @ApplyOptions<ListenerOptions>({
   event: 'messageCreate',
@@ -18,6 +18,10 @@ export class MessageMoveShorthand extends Listener {
       content.startsWith(client.fetchPrefix(message).toString())
     )
       return;
-    filter(message);
+
+    const filters = getMessageFilters(message);
+    if (filters.length == 0) return;
+    
+    filter(message, filters);
   }
 }

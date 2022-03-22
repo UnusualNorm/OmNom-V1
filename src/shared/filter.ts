@@ -22,7 +22,7 @@ fs.readdirSync(path.join(__dirname, '../filters')).forEach(
   }
 );
 
-function parseFilterList(list: string[]): Filter[] {
+export function parseFilterList(list: string[]): Filter[] {
   const filterList: Filter[] = [];
   if (!list) return [];
   for (let i = 0; i < list.length; i++) {
@@ -35,11 +35,11 @@ function parseFilterList(list: string[]): Filter[] {
   return filterList;
 }
 
-export function filter(message: Message) {
-  const { channel, guild, member } = message;
-  if (!(channel.type == 'GUILD_TEXT' || channel.isThread())) return;
-  const seperate = separateThread(channel);
+export function getMessageFilters(message: Message): Filter[] {
+  const { member, channel, guild } = message;
+  if (!(channel.type == 'GUILD_TEXT' || channel.isThread())) return [];
 
+  const seperate = separateThread(channel);
   let filterList: Filter[] = [];
   // Guild
   filterList = filterList.concat(
@@ -75,20 +75,23 @@ export function filter(message: Message) {
     );
 
   filterList.reverse();
-  if (!filterList) filterList = [];
-  if (filterList.length <= 0) return;
+  return filterList;
+}
+
+export function filter(message: Message, filterList: Filter[]) {
+  const { channel, guild } = message;
+  if (!(channel.type == 'GUILD_TEXT' || channel.isThread())) return;
+  const seperate = separateThread(channel);
 
   // Permissions
   if (
     !channel.permissionsFor(guild.me).has('MANAGE_MESSAGES') ||
     !channel.permissionsFor(guild.me).has('MANAGE_WEBHOOKS')
   )
-    return message.reply(
-      'I cannot filter messages from this channel... (Do I have permissions?)'
-    );
+    return;
 
   ensureGetWebhook(seperate.channel, (error, webhook) => {
-    if (error) return message.reply(error);
+    if (error) return;
 
     const next = (i: number, text: string, override: WebhookMessageOptions) => {
       if (i < filterList.length)
@@ -106,12 +109,11 @@ export function filter(message: Message) {
       override.username = override.username || '[deleted]';
 
       messageToWebhook(message, webhook, override, (error) => {
-        if (error) return message.reply(error);
+        if (error) return;
 
-        message.delete().catch((error) => {
-          logger.error(`Failed to delete messages...\n${error}`);
-          message.reply('Failed to delete messages... (Check permissions?)');
-        });
+        message.delete().catch((error) => 
+          logger.error(`Failed to delete messages...\n${error}`)
+        );
       });
     };
 
