@@ -22,8 +22,9 @@ fs.readdirSync(path.join(__dirname, '../filters')).forEach(
   }
 );
 
-function parseFilterList(list: string[] = []): Filter[] {
+function parseFilterList(list: string[]): Filter[] {
   const filterList: Filter[] = [];
+  if (!list) return [];
   for (let i = 0; i < list.length; i++) {
     const filterName = list[i];
     const filter = filters.get(filterName);
@@ -57,7 +58,7 @@ export function filter(message: Message) {
 
     // Roles
     if (!message.webhookId) {
-      const roles = member.roles.cache.toJSON()||[];
+      const roles = member.roles.cache.toJSON() || [];
       for (let i = roles.length - 1; i >= 0; i--) {
         const role = roles[i];
         filterList = filterList.concat(
@@ -108,6 +109,7 @@ export function filter(message: Message) {
       });
     };
     filterList.reverse();
+    if (!filterList) filterList = [];
     if (filterList.length > 0)
       next(0, message.content, convertMessage(message));
   });
