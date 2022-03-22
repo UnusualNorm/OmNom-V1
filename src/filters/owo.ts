@@ -13,10 +13,12 @@ class HFilter extends Filter {
     cb: (text: string, override?: WebhookMessageOptions) => unknown,
     override?: WebhookMessageOptions
   ) => {
-    if (override)
-      override.username = owoify.uwuifyWords(override.username);
+    if (override) override.username = owoify.uwuifyWords(override.username);
 
-    cb(owoify.uwuifySentence(text), override);
+    text = owoify.uwuifySentence(text);
+    text.replace(/\*/g, '\\*');
+    text.replace(/`/g, '\\`');
+    cb(text, override);
   };
 }
 

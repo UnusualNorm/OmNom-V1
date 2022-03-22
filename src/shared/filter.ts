@@ -111,9 +111,11 @@ export function filter(message: Message, filterList: Filter[]) {
       messageToWebhook(message, webhook, override, (error) => {
         if (error) return;
 
-        message.delete().catch((error) => 
-          logger.error(`Failed to delete messages...\n${error}`)
-        );
+        message
+          .delete()
+          .catch((error) =>
+            logger.error(`Failed to delete messages...\n${error}`)
+          );
       });
     };
 

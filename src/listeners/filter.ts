@@ -21,7 +21,7 @@ export class MessageMoveShorthand extends Listener {
 
     const filters = getMessageFilters(message);
     if (filters.length == 0) return;
-    
+
     filter(message, filters);
   }
 }
