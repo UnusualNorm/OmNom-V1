@@ -53,12 +53,12 @@ export function convertMessage(message: Message): WebhookMessageOptions {
   const { author, member, content, attachments } = message;
 
   return {
-    //FIXME: Webhook avatars broken
+    // FIXME: Webhook avatars broken
     avatarURL: message.webhookId ? null : member.displayAvatarURL(),
     username: member?.nickname ? member.nickname : author.username,
     content,
     files: attachments.toJSON(),
-    //TODO: Add embeds...
+    // TODO: Add embeds...
   };
 }
 

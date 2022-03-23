@@ -26,7 +26,7 @@ export function move(message: Message) {
       if (error) return message.reply(error);
 
       const override: WebhookMessageOptions = { threadId };
-      //TODO: Prepend the reference user if targetMessage is type 'reply'
+      // TODO: Prepend the reference user if targetMessage is type 'reply'
       if (db.get(`guild_${guild.id}.move.signature`)) {
         override.content = `${targetMessage.content}\n- <@${author.id}> moved <@${targetMessage.author.id}>'s message from <#${targetMessage.channelId}>`;
         logger.debug('Added signature...');
@@ -37,7 +37,7 @@ export function move(message: Message) {
 
         targetMessage
           .delete()
-          //TODO: Safely delete asking message...
+          // TODO: Safely delete asking message...
           .catch((error) => {
             logger.error(`Failed to delete target message...\n${error}`);
             message.reply(

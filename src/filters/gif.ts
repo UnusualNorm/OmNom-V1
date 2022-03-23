@@ -1,5 +1,4 @@
 import { client } from 'tenorjs';
-import TextOnGif from 'text-on-gif';
 import Filter from '../Filter';
 import { MessageAttachment, WebhookMessageOptions } from 'discord.js';
 const Tenor = client({

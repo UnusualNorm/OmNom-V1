@@ -15,8 +15,9 @@ class HFilter extends Filter {
     if (override) override.username = owoify.uwuifyWords(override.username);
 
     text = owoify.uwuifySentence(text);
-    text.replace(/\*/g, '\\*');
-    text.replace(/`/g, '\\`');
+    // FIXME: Not making asterisks visible in message
+    // text.replace(/\*/g, '\\*');
+    // text.replace(/`/g, '\\`');
     cb(text, override);
   };
 }
