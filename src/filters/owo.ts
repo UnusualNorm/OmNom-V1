@@ -3,7 +3,7 @@ import Filter from '../Filter';
 import OWO from 'uwuifier';
 const owoify = new OWO();
 
-class HFilter extends Filter {
+class OWOFilter extends Filter {
   name = 'owo';
   description = 'OWO-ifies your message!';
 
@@ -22,4 +22,4 @@ class HFilter extends Filter {
   };
 }
 
-export default new HFilter();
+export default new OWOFilter();

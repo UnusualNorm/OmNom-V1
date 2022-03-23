@@ -146,7 +146,7 @@ function zalgoChar(letter: string) {
   return letter;
 }
 
-class zalgoFilter extends Filter {
+class ZalgoFilter extends Filter {
   name = 'zalgo';
   description = 'Zalgoify your text';
 
@@ -163,4 +163,4 @@ class zalgoFilter extends Filter {
   };
 }
 
-export default new zalgoFilter();
+export default new ZalgoFilter();

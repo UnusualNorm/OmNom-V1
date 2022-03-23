@@ -9,7 +9,7 @@ const Tenor = client({
   DateFormat: 'D/MM/YYYY - H:mm:ss A',
 });
 
-class reverseFilter extends Filter {
+class GifFilter extends Filter {
   name = 'gif';
   description = 'Turns your message into a gif!';
 
@@ -27,4 +27,4 @@ class reverseFilter extends Filter {
   };
 }
 
-export default new reverseFilter();
+export default new GifFilter();

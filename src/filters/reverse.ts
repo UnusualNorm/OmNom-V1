@@ -1,7 +1,7 @@
 import Filter from '../Filter';
 import { WebhookMessageOptions } from 'discord.js';
 
-class reverseFilter extends Filter {
+class ReverseFilter extends Filter {
   name = 'reverse';
   description = 'Reverse Any Given Text';
 
@@ -17,4 +17,4 @@ class reverseFilter extends Filter {
   };
 }
 
-export default new reverseFilter();
+export default new ReverseFilter();

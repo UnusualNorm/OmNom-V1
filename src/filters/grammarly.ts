@@ -6,7 +6,7 @@ const client = new Grammarly({
   password: process.env.GRAMMARLY_PASSWORD,
 });
 
-class HFilter extends Filter {
+class GrammarlyFilter extends Filter {
   name = 'grammarly';
   description = 'Auto-corrects your message!';
 
@@ -22,4 +22,4 @@ class HFilter extends Filter {
   };
 }
 
-export default new HFilter();
+export default new GrammarlyFilter();

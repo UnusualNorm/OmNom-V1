@@ -2000,9 +2000,10 @@ quick-lru@^5.1.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
-quick.db@plexidev/quick.db:
-  version "8.0.0"
-  resolved "https://codeload.github.com/plexidev/quick.db/tar.gz/4b31d882b434516dc416658256901cd7abcbb96f"
+quick.db@^7.1.3:
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/quick.db/-/quick.db-7.1.3.tgz#dd111dac3aa0cf818f07306b537ca6f8b4b2ef7b"
+  integrity sha512-0S1fVb9OAZGhkI4ZIc5Oe4yWMwhz20xSsziwd6+yGWKKMsPt+XOfj/gD5CesGxd2WdqBkZFBiP8ZqWDu55HLHA==
   dependencies:
     better-sqlite3 "^7.1.1"
     lodash "^4.17.20"
