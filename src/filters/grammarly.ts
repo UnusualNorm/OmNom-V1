@@ -8,7 +8,7 @@ const client = new Grammarly({
 
 class GrammarlyFilter extends Filter {
   name = 'grammarly';
-  description = 'Auto-corrects your message!';
+  description = 'Did you write that email to your boss yet?';
 
   run = (
     text: string,

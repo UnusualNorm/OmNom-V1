@@ -47,7 +47,7 @@ function H(h: string): string {
 
 class HFilter extends Filter {
   name = 'h';
-  description = 'H-ifies your message!';
+  description = 'hHhhhhHhhHHHhhHhhHHHhHhHhHHhHhhhhhHhHHHhhhHhHHHhhhHhHHHh';
 
   run = (
     text: string,

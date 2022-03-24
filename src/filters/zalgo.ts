@@ -148,7 +148,7 @@ function zalgoChar(letter: string) {
 
 class ZalgoFilter extends Filter {
   name = 'zalgo';
-  description = 'Zalgoify your text';
+  description = 'Am hacker man! 😎';
 
   run = (
     text: string,

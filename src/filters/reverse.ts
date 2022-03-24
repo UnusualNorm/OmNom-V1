@@ -3,7 +3,7 @@ import { WebhookMessageOptions } from 'discord.js';
 
 class ReverseFilter extends Filter {
   name = 'reverse';
-  description = 'Reverse Any Given Text';
+  description = '!em pleh ,on hO';
 
   run = (
     text: string,

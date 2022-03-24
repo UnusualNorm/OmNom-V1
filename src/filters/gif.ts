@@ -11,7 +11,7 @@ const Tenor = client({
 
 class GifFilter extends Filter {
   name = 'gif';
-  description = 'Turns your message into a gif!';
+  description = 'L + Ratio';
 
   run = (
     text: string,

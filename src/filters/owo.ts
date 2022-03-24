@@ -5,7 +5,7 @@ const owoify = new OWO();
 
 class OWOFilter extends Filter {
   name = 'owo';
-  description = 'OWO-ifies your message!';
+  description = "OWO What's this?";
 
   run = (
     text: string,
