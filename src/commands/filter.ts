@@ -1,7 +1,7 @@
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Args } from '@sapphire/framework';
-import { Message, MessageEmbed } from 'discord.js';
+import { EmbedFieldData, Message, MessageEmbed } from 'discord.js';
 import db from 'quick.db';
 import { filter, filters, toggleDBFilter } from '../shared/filter';
 
@@ -13,7 +13,15 @@ const helpEmbed = new MessageEmbed().setTitle('Filter | Help').setFields([
     value: 'Filters a message! (REPLY ONLY)',
   },
   {
-    name: 'toggle',
+    name: 'message',
+    value: 'Filters a message! (REPLY ONLY)',
+  },
+  {
+    name: 'list',
+    value: 'Lists all the filters!',
+  },
+  {
+    name: 'Add/Remove',
     value: 'Add/remove a filter from all specified mentions!',
   },
 ]);
@@ -58,9 +66,10 @@ function toggleBase(message: Message, args: Args, enabled: boolean) {
 
 @ApplyOptions<SubCommandPluginCommand.Options>({
   subCommands: [
-    'message',
-    'toggle',
     { input: 'help', default: true },
+    'message',
+    'list',
+    'toggle',
     'add',
     'remove',
   ],
@@ -121,7 +130,34 @@ export class UserCommand extends SubCommandPluginCommand {
     const { logger } = this.container;
 
     message.reply({ embeds: [helpEmbed] }).catch((reason) => {
-      logger.error(`Failed to reply to send message...\n${reason}`);
+      logger.error(`Failed to send message...\n${reason}`);
+    });
+  }
+  public list(message: Message) {
+    const { logger } = this.container;
+
+    //TODO: Maybe not run this every time?
+    const filtersEmbed = new MessageEmbed().setTitle('Filter | List').setFields(
+      (function (): EmbedFieldData[] {
+        const fields: EmbedFieldData[] = [];
+        const filterArray = Array.from(filters, ([name, value]) => ({
+          name,
+          description: value.description,
+        }));
+
+        for (let i = 0; i < filterArray.length; i++) {
+          const filterEntry = filterArray[i];
+          fields.push({
+            name: filterEntry.name,
+            value: filterEntry.description,
+          });
+        }
+        return fields;
+      })()
+    );
+
+    message.reply({ embeds: [filtersEmbed] }).catch((reason) => {
+      logger.error(`Failed to send message...\n${reason}`);
     });
   }
 }

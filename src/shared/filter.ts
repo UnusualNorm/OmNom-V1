@@ -12,23 +12,30 @@ import Filter from '../Filter';
 import path from 'path';
 import fs from 'fs';
 
+// Import filters from filters folder
 export const filters = new Map<string, Filter>();
 fs.readdirSync(path.join(__dirname, '../filters')).forEach(
   async (filterFile) => {
+    // Import the filter
     const filter: { default: Filter } = (
       await import(path.join(__dirname, '../filters', filterFile))
     ).default;
+    // Make sure it's a filter
     if (filter instanceof Filter) filters.set(filter.name, filter);
+    else logger.warn(`Non-filter '${filterFile}' found in filters...`);
   }
 );
 
+// Convert array of filter names to filters
 export function parseFilterList(list: string[]): Filter[] {
   const filterList: Filter[] = [];
   if (!list) return [];
+  // Loop through and parse the filters
   for (let i = 0; i < list.length; i++) {
     const filterName = list[i];
     const filter = filters.get(filterName);
 
+    // Make sure it's a valid filter
     if (filter) filterList.push(filter);
     else logger.warn(`Unidentified filter found: '${filterName}'...`);
   }
@@ -37,16 +44,17 @@ export function parseFilterList(list: string[]): Filter[] {
 
 export function getMessageFilters(message: Message): Filter[] {
   const { member, channel, guild } = message;
+  // Make sure we're in a supported filter channel
   if (!(channel.type == 'GUILD_TEXT' || channel.isThread())) return [];
 
   const seperate = separateThread(channel);
   let filterList: Filter[] = [];
-  // Guild
+  // Get guild filters
   filterList = filterList.concat(
     parseFilterList(db.get(`guild_${guild.id}.filter.filters`))
   );
 
-  // Roles
+  // Get role filters
   if (!message.webhookId) {
     const roles = member.roles.cache.toJSON() || [];
     for (let i = roles.length - 1; i >= 0; i--) {
@@ -59,14 +67,14 @@ export function getMessageFilters(message: Message): Filter[] {
     }
   }
 
-  // Channel
+  // Get channel filters
   filterList = filterList.concat(
     parseFilterList(
       db.get(`guild_${guild.id}.channels.${seperate.channel.id}.filter.filters`)
     )
   );
 
-  // Member
+  // Get member filters
   if (!message.webhookId)
     filterList = filterList.concat(
       parseFilterList(
@@ -74,16 +82,18 @@ export function getMessageFilters(message: Message): Filter[] {
       )
     );
 
+  // Put it in execution order
   filterList.reverse();
   return filterList;
 }
 
 export function filter(message: Message, filterList: Filter[]) {
   const { channel, guild } = message;
+  // Make sure we can filter
   if (!(channel.type == 'GUILD_TEXT' || channel.isThread())) return;
   const seperate = separateThread(channel);
 
-  // Permissions
+  // Check permissions to get webhook and delete
   if (
     !channel.permissionsFor(guild.me).has('MANAGE_MESSAGES') ||
     !channel.permissionsFor(guild.me).has('MANAGE_WEBHOOKS')
@@ -94,6 +104,7 @@ export function filter(message: Message, filterList: Filter[]) {
     if (error) return;
 
     const next = (i: number, text: string, override: WebhookMessageOptions) => {
+      // If wer're not done, run filter and redo
       if (i < filterList.length)
         return filterList[i].run(
           text,
@@ -104,14 +115,18 @@ export function filter(message: Message, filterList: Filter[]) {
           override
         );
 
+      // Make sure we send to thread
       override.threadId = seperate.threadId;
+      // Set defaults
       override.content =
         text || (override.files.length > 0 ? null : '[removed]');
       override.username = override.username || '[deleted]';
 
+      // Send message
       messageToWebhook(message, webhook, override, (error) => {
         if (error) return;
 
+        // Delete unfiltered message
         message
           .delete()
           .catch((error) =>
@@ -130,8 +145,10 @@ export function toggleDBFilter(
   filter: string
 ) {
   let thingFilters: string[] = db.get(filterPath) || [];
+  // If it exists, and we want to enable it, add it
   if (filters.has(filter) && !thingFilters.includes(filter) && enable)
     thingFilters.push(filter);
+  // If we want to disable it, filter the list
   else if (!enable) thingFilters = thingFilters.filter((f) => f != filter);
   db.set(filterPath, thingFilters);
 }

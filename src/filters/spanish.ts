@@ -40,7 +40,7 @@ export function isUri(value: string): boolean {
 
 class SpanishFilter extends Filter {
   name = 'spanish';
-  description = '*Spanish noises intensify...*';
+  description = '*Nobody ever expects the spanish inquisition!*';
 
   run = (
     text: string,
